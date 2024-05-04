@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3 uid="uid://dc28g7cew3dtx"]
+
+[ext_resource type="Texture2D" uid="uid://f4acfwxn7qgb" path="res://assets/Backgrounds mios/cancha.png" id="1_0beuf"]
+[ext_resource type="Script" path="res://court.gd" id="1_npf08"]
+[ext_resource type="PackedScene" uid="uid://ddmw2qow26a1x" path="res://parts/player.tscn" id="2_5ubx8"]
+[ext_resource type="PackedScene" uid="uid://cow7qie7elrtu" path="res://parts/ball.tscn" id="3_jkmkq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0rg0h"]
+size = Vector2(894, 66)
+
+[node name="court" type="Node2D"]
+script = ExtResource("1_npf08")
+
+[node name="map" type="Node2D" parent="."]
+
+[node name="TileMap" type="TileMap" parent="map"]
+format = 2
+
+[node name="BG" type="Sprite2D" parent="map"]
+position = Vector2(542.062, 307.156)
+scale = Vector2(1.05274, 0.981556)
+texture = ExtResource("1_0beuf")
+
+[node name="Area2D" type="Area2D" parent="map"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="map/Area2D"]
+position = Vector2(496, 32)
+shape = SubResource("RectangleShape2D_0rg0h")
+
+[node name="Sprite2D" type="Sprite2D" parent="map/Area2D"]
+
+[node name="Player" parent="." instance=ExtResource("2_5ubx8")]
+position = Vector2(352, 552)
+scale = Vector2(0.905, 0.905)
+motion_mode = 1
+floor_max_angle = 1.5708
+
+[node name="Ball" parent="." instance=ExtResource("3_jkmkq")]
+position = Vector2(576, 152)
+
+[connection signal="body_entered" from="map/Area2D" to="." method="_on_area_2d_body_entered"]

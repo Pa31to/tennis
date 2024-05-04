@@ -1,0 +1,54 @@
+[gd_scene load_steps=8 format=3 uid="uid://cow7qie7elrtu"]
+
+[ext_resource type="Script" path="res://parts/ball.gd" id="1_78qxc"]
+[ext_resource type="Texture2D" uid="uid://bw3qlu6l80jlk" path="res://assets/64x64/tennis.png" id="1_o311c"]
+[ext_resource type="Texture2D" uid="uid://246w8vuurkxy" path="res://assets/64x64/tennis-2.png" id="2_wim60"]
+[ext_resource type="Texture2D" uid="uid://x58fuexr616n" path="res://assets/64x64/tennis-3.png" id="3_3ax8i"]
+[ext_resource type="Texture2D" uid="uid://bmddof88yu61u" path="res://assets/64x64/tennis-4.png" id="4_vso8k"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ts67w"]
+radius = 8.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_2537n"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_o311c")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_wim60")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_3ax8i")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_vso8k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_o311c")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_wim60")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_3ax8i")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_vso8k")
+}],
+"loop": true,
+"name": &"spinning",
+"speed": 10.0
+}]
+
+[node name="ball" type="CharacterBody2D"]
+script = ExtResource("1_78qxc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ts67w")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.25, 0.25)
+sprite_frames = SubResource("SpriteFrames_2537n")
+animation = &"spinning"
+frame_progress = 0.0385723

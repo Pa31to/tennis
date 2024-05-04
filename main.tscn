@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://fxoqm201vnkp"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_g8wuq"]
+[ext_resource type="Texture2D" uid="uid://cqds2wu2wpi4u" path="res://assets/PixelGUI/PlayBtn.png" id="1_o72p5"]
+[ext_resource type="Texture2D" uid="uid://b1g4i7g06vimy" path="res://assets/PixelGUI/PlayClick.png" id="2_ycdda"]
+[ext_resource type="Texture2D" uid="uid://b4dx6i14bq1yi" path="res://assets/PixelGUI/ExitBtn.png" id="3_em1ps"]
+[ext_resource type="Texture2D" uid="uid://bmwhgtfpenvav" path="res://assets/PixelGUI/ExitClick.png" id="4_0y3xu"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_g8wuq")
+
+[node name="Play" type="TextureButton" parent="."]
+offset_left = 296.0
+offset_top = 56.0
+offset_right = 886.0
+offset_bottom = 316.0
+texture_normal = ExtResource("1_o72p5")
+texture_pressed = ExtResource("2_ycdda")
+stretch_mode = 0
+
+[node name="Exit" type="TextureButton" parent="."]
+offset_left = 304.0
+offset_top = 360.0
+offset_right = 894.0
+offset_bottom = 620.0
+texture_normal = ExtResource("3_em1ps")
+texture_pressed = ExtResource("4_0y3xu")
+
+[node name="BG" type="ParallaxBackground" parent="."]
+
+[connection signal="pressed" from="Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="Exit" to="." method="_on_exit_pressed"]

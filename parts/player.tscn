@@ -1,0 +1,275 @@
+[gd_scene load_steps=18 format=3 uid="uid://ddmw2qow26a1x"]
+
+[ext_resource type="Texture2D" uid="uid://dyyvu5sefedol" path="res://assets/Mis Sprites/Player/Player A/Idle/Idle-01.png" id="1_vvw61"]
+[ext_resource type="Texture2D" uid="uid://djajopkegclkq" path="res://assets/Mis Sprites/Swing/Swing-1.png" id="2_5cja0"]
+[ext_resource type="Texture2D" uid="uid://dfvts0ld6sby4" path="res://assets/Mis Sprites/Player/Player A/Idle/Idle-02.png" id="2_njg0i"]
+[ext_resource type="Texture2D" uid="uid://cdra5ko5l23rb" path="res://assets/Mis Sprites/Player/Player A/run/run-02.png" id="3_0vgu1"]
+[ext_resource type="Texture2D" uid="uid://cckn1xql0rwb7" path="res://assets/Mis Sprites/Swing/Swing-2.png" id="3_5w4pl"]
+[ext_resource type="Texture2D" uid="uid://8m2q37mwpkf8" path="res://assets/Mis Sprites/Swing/Swing-3.png" id="4_6ap3w"]
+[ext_resource type="Texture2D" uid="uid://lxwi2wo68bbj" path="res://assets/Mis Sprites/Player/Player A/run/run-2.5.png" id="4_46bbw"]
+[ext_resource type="Texture2D" uid="uid://dtm4kka6srqe4" path="res://assets/Mis Sprites/Swing/Swing-4.png" id="5_3hkfj"]
+[ext_resource type="Texture2D" uid="uid://b1qcdo3w0wcgw" path="res://assets/Mis Sprites/Player/Player A/run/run-03.png" id="5_ug0hs"]
+[ext_resource type="Texture2D" uid="uid://cin87611xk52h" path="res://assets/Mis Sprites/Swing/Swing-5.png" id="6_m5ytq"]
+[ext_resource type="Texture2D" uid="uid://c0xtjbf36opeb" path="res://assets/Mis Sprites/blank.png" id="7_7qfx7"]
+
+[sub_resource type="GDScript" id="GDScript_wqgdd"]
+script/source = "extends CharacterBody2D
+
+
+var SPEED = 300.0
+@onready var anim = get_node(\"AnimatedSprite2D\")
+@onready var animR = get_node(\"ballDetection/detectD/CollisionD/AnimateD\")
+@onready var animL = get_node(\"ballDetection/detectI/CollisionI/AnimateI\")
+var reachI = false
+var reachD = false
+var can_hit = true
+# Get the gravity from the project settings to be synced with RigidBody nodes.
+func _ready():
+	anim.play(\"idle\")
+
+func _physics_process(delta):
+	# Get the input direction and handle the movement/deceleration.
+	# As good practice, you should replace UI actions with custom gameplay actions.
+	var directionX = Input.get_axis(\"ui_left\", \"ui_right\")
+	var directionY = Input.get_axis(\"ui_up\", \"ui_down\")
+	input()
+		
+	if directionX == -1:
+		anim.flip_h = true
+	if directionX == 1:
+		anim.flip_h = false
+	if directionX or directionY:
+		velocity.x = directionX * SPEED
+		velocity.y = directionY * SPEED
+		anim.play(\"run\")
+	else:	
+		if velocity.y == 0 and velocity.x == 0:
+			anim.play(\"idle\")
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.y = move_toward(velocity.y, 0, SPEED)
+	move_and_collide(velocity*delta)
+
+
+
+
+func input():
+	if Input.is_action_pressed(\"hit_left\"):
+		animL.play(\"swing\")
+		await animL.animation_finished
+		_hit(\"A\")
+		can_hit = false
+		get_tree().create_timer(2).timeout.connect(func(): can_hit = true)
+	if Input.is_action_pressed(\"hit_right\"):
+		animR.play(\"swing\")
+		await animR.animation_finished
+		_hit(\"D\")
+		can_hit = false
+		get_tree().create_timer(2).timeout.connect(func(): can_hit = true)
+	if Input.is_action_pressed(\"reset\"):
+		get_tree().reload_current_scene()
+		
+func _hit(tecla):
+	match tecla:
+		\"A\":
+			if reachI == true and can_hit:
+				print(Game.ballspeed)
+				if(Input.is_action_pressed(\"ui_left\")):
+					Game.directionX = - 0.5
+				elif(Input.is_action_pressed(\"ui_right\")):
+					Game.directionX =  0.5
+				else:
+					Game.directionX = 0	
+				if(Input.is_action_pressed(\"smash\")):
+					Game.directionY = - 1
+					if(Game.ballspeed <= Game.maxBallSpeed ):
+						Game.ballspeed += 50
+				elif(Input.is_action_pressed(\"lob\")):
+					Game.directionY = - 0.75	
+					if(Game.ballspeed >= Game.minBallSpeed ):
+						Game.ballspeed -= 25	
+				else:
+					Game.directionY = - Game.directionY
+		\"D\":
+			
+			print(Game.ballspeed)
+			if reachD == true and can_hit:
+				if(Input.is_action_pressed(\"ui_left\")):
+					Game.directionX = - 0.5
+				elif(Input.is_action_pressed(\"ui_right\")):
+					Game.directionX =  0.5
+				else:
+					Game.directionX = 0	
+				if(Input.is_action_pressed(\"smash\")):
+					Game.directionY =  -1
+					if(Game.ballspeed <= Game.maxBallSpeed ):
+						Game.ballspeed += 50
+				elif(Input.is_action_pressed(\"lob\")):
+					Game.directionY =  -1	
+					if(Game.ballspeed >= Game.minBallSpeed ):
+						Game.ballspeed -= 25	
+				else:
+					Game.directionY = - Game.directionY
+		_:
+			print(\"No es un control\")
+	
+func _on_detect_d_body_entered(body):
+	if body.name == \"Ball\":
+		reachD = true
+
+func _on_detect_d_body_exited(body):
+	if body.name == \"Ball\":
+		reachD = false
+
+func _on_detect_i_body_entered(body):
+	if body.name == \"Ball\":
+		reachI = true
+	
+func _on_detect_i_body_exited(body):
+	if body.name == \"Ball\":
+		reachI = false
+"
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1ytss"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_vvw61")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_njg0i")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_vvw61")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 2.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_0vgu1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_46bbw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_ug0hs")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_46bbw")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0td5b"]
+radius = 5.0
+height = 10.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xk7yb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_5cja0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_5w4pl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_6ap3w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_3hkfj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_m5ytq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_7qfx7")
+}],
+"loop": false,
+"name": &"swing",
+"speed": 20.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_63pnm"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_5cja0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_5w4pl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_6ap3w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_3hkfj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_m5ytq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_7qfx7")
+}],
+"loop": false,
+"name": &"swing",
+"speed": 20.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6kwoy"]
+size = Vector2(156, 94)
+
+[node name="Player" type="CharacterBody2D"]
+script = SubResource("GDScript_wqgdd")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_1ytss")
+animation = &"run"
+frame_progress = 0.927172
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -8)
+scale = Vector2(-0.01, -0.01)
+shape = SubResource("CapsuleShape2D_0td5b")
+
+[node name="ballDetection" type="Area2D" parent="."]
+
+[node name="detectD" type="Area2D" parent="ballDetection"]
+
+[node name="CollisionD" type="CollisionPolygon2D" parent="ballDetection/detectD"]
+polygon = PackedVector2Array(0, -31, 0, 37, 8, 40, 23, 42, 32, 36, 45, 18, 50, -4, 45, -28, 36, -40, 25, -42, 6, -41, 0, -41)
+
+[node name="AnimateD" type="AnimatedSprite2D" parent="ballDetection/detectD/CollisionD"]
+position = Vector2(33.875, -3)
+scale = Vector2(2.25, 2.75)
+sprite_frames = SubResource("SpriteFrames_xk7yb")
+animation = &"swing"
+frame = 5
+frame_progress = 1.0
+
+[node name="detectI" type="Area2D" parent="ballDetection"]
+
+[node name="CollisionI" type="CollisionPolygon2D" parent="ballDetection/detectI"]
+polygon = PackedVector2Array(0, -41, 0, 37, -11, 40, -26, 42, -45, 14, -46, 1, -40, -27, -31, -41)
+
+[node name="AnimateI" type="AnimatedSprite2D" parent="ballDetection/detectI/CollisionI"]
+position = Vector2(-32, -2)
+scale = Vector2(2.25, 2.75)
+sprite_frames = SubResource("SpriteFrames_63pnm")
+animation = &"swing"
+frame = 5
+frame_progress = 1.0
+flip_h = true
+
+[node name="CollisionFull" type="CollisionShape2D" parent="ballDetection"]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_6kwoy")
+
+[connection signal="body_entered" from="ballDetection/detectD" to="." method="_on_detect_d_body_entered"]
+[connection signal="body_exited" from="ballDetection/detectD" to="." method="_on_detect_d_body_exited"]
+[connection signal="body_entered" from="ballDetection/detectI" to="." method="_on_detect_i_body_entered"]
+[connection signal="body_exited" from="ballDetection/detectI" to="." method="_on_detect_i_body_exited"]
