@@ -41,7 +41,8 @@ func _physics_process(delta):
 	if directionX or directionY:
 		velocity.x = directionX * SPEED
 		velocity.y = directionY * SPEED
-		anim.play(\"run\")
+		if SPEED != 0:
+			anim.play(\"run\")
 	else:	
 		if velocity.y == 0 and velocity.x == 0:
 			anim.play(\"idle\")
@@ -53,25 +54,29 @@ func _physics_process(delta):
 
 
 func input():
-	if Input.is_action_pressed(\"hit_left\"):
+	if Input.is_action_pressed(\"hit_left\") and can_hit:
+		self.SPEED = 0
 		animL.play(\"swing\")
 		await animL.animation_finished
 		_hit(\"A\")
 		can_hit = false
-		get_tree().create_timer(2).timeout.connect(func(): can_hit = true)
-	if Input.is_action_pressed(\"hit_right\"):
+		self.SPEED = 300
+		get_tree().create_timer(1).timeout.connect(func(): can_hit = true)
+	elif Input.is_action_pressed(\"hit_right\") and can_hit:
+		self.SPEED = 0
 		animR.play(\"swing\")
 		await animR.animation_finished
 		_hit(\"D\")
 		can_hit = false
-		get_tree().create_timer(2).timeout.connect(func(): can_hit = true)
-	if Input.is_action_pressed(\"reset\"):
+		self.SPEED = 300
+		get_tree().create_timer(1).timeout.connect(func(): can_hit = true)
+	elif Input.is_action_pressed(\"reset\"):
 		get_tree().reload_current_scene()
 		
 func _hit(tecla):
 	match tecla:
 		\"A\":
-			if reachI == true and can_hit:
+			if reachI == true:
 				print(Game.ballspeed)
 				if(Input.is_action_pressed(\"ui_left\")):
 					Game.directionX = - 0.5
@@ -92,7 +97,7 @@ func _hit(tecla):
 		\"D\":
 			
 			print(Game.ballspeed)
-			if reachD == true and can_hit:
+			if reachD == true:
 				if(Input.is_action_pressed(\"ui_left\")):
 					Game.directionX = - 0.5
 				elif(Input.is_action_pressed(\"ui_right\")):
@@ -241,7 +246,9 @@ shape = SubResource("CapsuleShape2D_0td5b")
 [node name="detectD" type="Area2D" parent="ballDetection"]
 
 [node name="CollisionD" type="CollisionPolygon2D" parent="ballDetection/detectD"]
-polygon = PackedVector2Array(0, -31, 0, 37, 8, 40, 23, 42, 32, 36, 45, 18, 50, -4, 45, -28, 36, -40, 25, -42, 6, -41, 0, -41)
+position = Vector2(0.543751, 0.366821)
+scale = Vector2(1.02705, 1.00481)
+polygon = PackedVector2Array(0, -31, 0, 37, 8, 40, 23, 42, 39, 42, 62, 38, 67, 10, 66, -26, 55, -44, 23, -49, 6, -47, 0, -41)
 
 [node name="AnimateD" type="AnimatedSprite2D" parent="ballDetection/detectD/CollisionD"]
 position = Vector2(33.875, -3)
@@ -254,11 +261,11 @@ frame_progress = 1.0
 [node name="detectI" type="Area2D" parent="ballDetection"]
 
 [node name="CollisionI" type="CollisionPolygon2D" parent="ballDetection/detectI"]
-polygon = PackedVector2Array(0, -41, 0, 37, -11, 40, -26, 42, -45, 14, -46, 1, -40, -27, -31, -41)
+polygon = PackedVector2Array(0, -41, 0, 37, -11, 40, -26, 42, -69, 38, -72, -5, -68, -40, -37, -48)
 
 [node name="AnimateI" type="AnimatedSprite2D" parent="ballDetection/detectI/CollisionI"]
-position = Vector2(-32, -2)
-scale = Vector2(2.25, 2.75)
+position = Vector2(-38.5, 2)
+scale = Vector2(2.65625, 3)
 sprite_frames = SubResource("SpriteFrames_63pnm")
 animation = &"swing"
 frame = 5
