@@ -1,10 +1,13 @@
-[gd_scene load_steps=18 format=3 uid="uid://ddmw2qow26a1x"]
+[gd_scene load_steps=21 format=3 uid="uid://ddmw2qow26a1x"]
 
+[ext_resource type="Texture2D" uid="uid://4oqcimgxjkwm" path="res://assets/Mis Sprites/Player/Player A/dash/dash-0001.png" id="1_a4rvv"]
 [ext_resource type="Texture2D" uid="uid://dyyvu5sefedol" path="res://assets/Mis Sprites/Player/Player A/Idle/Idle-01.png" id="1_vvw61"]
 [ext_resource type="Texture2D" uid="uid://djajopkegclkq" path="res://assets/Mis Sprites/Swing/Swing-1.png" id="2_5cja0"]
+[ext_resource type="Texture2D" uid="uid://cpmw3ldunqd3t" path="res://assets/Mis Sprites/Player/Player A/dash/dash-0002.png" id="2_8cd5u"]
 [ext_resource type="Texture2D" uid="uid://dfvts0ld6sby4" path="res://assets/Mis Sprites/Player/Player A/Idle/Idle-02.png" id="2_njg0i"]
 [ext_resource type="Texture2D" uid="uid://cdra5ko5l23rb" path="res://assets/Mis Sprites/Player/Player A/run/run-02.png" id="3_0vgu1"]
 [ext_resource type="Texture2D" uid="uid://cckn1xql0rwb7" path="res://assets/Mis Sprites/Swing/Swing-2.png" id="3_5w4pl"]
+[ext_resource type="Texture2D" uid="uid://ben7e2bkn56tg" path="res://assets/Mis Sprites/Player/Player A/dash/dash-0003.png" id="3_8lr0n"]
 [ext_resource type="Texture2D" uid="uid://8m2q37mwpkf8" path="res://assets/Mis Sprites/Swing/Swing-3.png" id="4_6ap3w"]
 [ext_resource type="Texture2D" uid="uid://lxwi2wo68bbj" path="res://assets/Mis Sprites/Player/Player A/run/run-2.5.png" id="4_46bbw"]
 [ext_resource type="Texture2D" uid="uid://dtm4kka6srqe4" path="res://assets/Mis Sprites/Swing/Swing-4.png" id="5_3hkfj"]
@@ -23,6 +26,9 @@ var SPEED = 300.0
 var reachI = false
 var reachD = false
 var can_hit = true
+var dashing = false
+var directionX = 0
+var directionY = 0
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 func _ready():
 	anim.play(\"idle\")
@@ -38,11 +44,17 @@ func _physics_process(delta):
 		anim.flip_h = true
 	if directionX == 1:
 		anim.flip_h = false
+	if anim.flip_h and dashing and directionX == 0 and directionY == 0:
+		directionX = -1
+	elif not anim.flip_h and dashing and directionX == 0 and directionY == 0:
+		directionX = 1
 	if directionX or directionY:
 		velocity.x = directionX * SPEED
 		velocity.y = directionY * SPEED
-		if SPEED != 0:
+		if SPEED != 0 and SPEED < 600:
 			anim.play(\"run\")
+		else:
+			anim.play(\"dash\")	
 	else:	
 		if velocity.y == 0 and velocity.x == 0:
 			anim.play(\"idle\")
@@ -54,26 +66,28 @@ func _physics_process(delta):
 
 
 func input():
-	if Input.is_action_pressed(\"hit_left\") and can_hit:
+	if Input.is_action_just_pressed(\"hit_left\") and can_hit:
 		self.SPEED = 0
 		animL.play(\"swing\")
 		await animL.animation_finished
 		_hit(\"A\")
 		can_hit = false
 		self.SPEED = 300
-		get_tree().create_timer(1).timeout.connect(func(): can_hit = true)
-	elif Input.is_action_pressed(\"hit_right\") and can_hit:
+		get_tree().create_timer(0.5).timeout.connect(func(): can_hit = true)
+	elif Input.is_action_just_pressed(\"hit_right\") and can_hit:
 		self.SPEED = 0
 		animR.play(\"swing\")
 		await animR.animation_finished
-		_hit(\"D\")
 		can_hit = false
+		_hit(\"D\")
 		self.SPEED = 300
-		get_tree().create_timer(1).timeout.connect(func(): can_hit = true)
+		get_tree().create_timer(0.5).timeout.connect(func(): can_hit = true)
+	elif Input.is_action_just_pressed(\"dash\") and not dashing and Game.stamina > 0 :	
+		dash()
 	elif Input.is_action_pressed(\"reset\"):
 		get_tree().reload_current_scene()
-		
 func _hit(tecla):
+	Game.stamina -= 5
 	match tecla:
 		\"A\":
 			if reachI == true:
@@ -116,7 +130,13 @@ func _hit(tecla):
 					Game.directionY = - Game.directionY
 		_:
 			print(\"No es un control\")
-	
+
+func dash():
+	self.SPEED = 600
+	dashing = true
+	Game.stamina -= 10
+	$dashTimer.start()
+
 func _on_detect_d_body_entered(body):
 	if body.name == \"Ball\":
 		reachD = true
@@ -132,10 +152,46 @@ func _on_detect_i_body_entered(body):
 func _on_detect_i_body_exited(body):
 	if body.name == \"Ball\":
 		reachI = false
+
+
+func _on_dash_timer_timeout():
+	SPEED = 300 
+	dashing = false
+
+
+func _on_stamina_timer_timeout():
+	if Game.stamina < 40:
+		Game.stamina += 5
 "
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_1ytss"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_a4rvv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_8cd5u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_8lr0n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_8lr0n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_8lr0n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_8cd5u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_a4rvv")
+}],
+"loop": false,
+"name": &"dash",
+"speed": 10.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": ExtResource("1_vvw61")
@@ -233,8 +289,9 @@ script = SubResource("GDScript_wqgdd")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_1ytss")
-animation = &"run"
-frame_progress = 0.927172
+animation = &"dash"
+frame = 6
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -8)
@@ -276,7 +333,16 @@ flip_h = true
 position = Vector2(0, -3)
 shape = SubResource("RectangleShape2D_6kwoy")
 
+[node name="dashTimer" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
+[node name="staminaTimer" type="Timer" parent="."]
+autostart = true
+
 [connection signal="body_entered" from="ballDetection/detectD" to="." method="_on_detect_d_body_entered"]
 [connection signal="body_exited" from="ballDetection/detectD" to="." method="_on_detect_d_body_exited"]
 [connection signal="body_entered" from="ballDetection/detectI" to="." method="_on_detect_i_body_entered"]
 [connection signal="body_exited" from="ballDetection/detectI" to="." method="_on_detect_i_body_exited"]
+[connection signal="timeout" from="dashTimer" to="." method="_on_dash_timer_timeout"]
+[connection signal="timeout" from="staminaTimer" to="." method="_on_stamina_timer_timeout"]

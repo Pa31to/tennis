@@ -1,12 +1,22 @@
-[gd_scene load_steps=6 format=3 uid="uid://dc28g7cew3dtx"]
+[gd_scene load_steps=10 format=3 uid="uid://dc28g7cew3dtx"]
 
 [ext_resource type="Texture2D" uid="uid://f4acfwxn7qgb" path="res://assets/Backgrounds mios/cancha.png" id="1_0beuf"]
 [ext_resource type="Script" path="res://court.gd" id="1_npf08"]
 [ext_resource type="PackedScene" uid="uid://ddmw2qow26a1x" path="res://parts/player.tscn" id="2_5ubx8"]
+[ext_resource type="Texture2D" uid="uid://begumh8xsfs7i" path="res://assets/Health Bar Asset Pack 2 by Adwit Rahman/Health Bar Asset Pack 2 by Adwit Rahman/greenbar (2).png" id="3_0mdrq"]
 [ext_resource type="PackedScene" uid="uid://cow7qie7elrtu" path="res://parts/ball.tscn" id="3_jkmkq"]
+[ext_resource type="Texture2D" uid="uid://cavlwxpmdpxcd" path="res://assets/Health Bar Asset Pack 2 by Adwit Rahman/Health Bar Asset Pack 2 by Adwit Rahman/redbar (2).png" id="4_vyoi8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0rg0h"]
 size = Vector2(894, 66)
+
+[sub_resource type="LabelSettings" id="LabelSettings_fskw3"]
+font_size = 8
+font_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_46qne"]
+font_size = 9
+font_color = Color(0, 0, 0, 1)
 
 [node name="court" type="Node2D"]
 script = ExtResource("1_npf08")
@@ -17,20 +27,60 @@ script = ExtResource("1_npf08")
 format = 2
 
 [node name="BG" type="Sprite2D" parent="map"]
-position = Vector2(542.062, 307.156)
+position = Vector2(560, 307)
 scale = Vector2(1.05274, 0.981556)
 texture = ExtResource("1_0beuf")
 
 [node name="Area2D" type="Area2D" parent="map"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="map/Area2D"]
-position = Vector2(496, 32)
+position = Vector2(554, 26)
 shape = SubResource("RectangleShape2D_0rg0h")
 
 [node name="Sprite2D" type="Sprite2D" parent="map/Area2D"]
 
+[node name="STM" type="TextureProgressBar" parent="map"]
+offset_left = 142.0
+offset_top = -79.0
+offset_right = 287.0
+offset_bottom = 66.0
+scale = Vector2(2, 2)
+max_value = 40.0
+value = 40.0
+texture_progress = ExtResource("3_0mdrq")
+
+[node name="staminaBar" type="Label" parent="map/STM"]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 35.0
+offset_right = 111.0
+offset_bottom = 47.0
+text = "Stamina:
+"
+label_settings = SubResource("LabelSettings_fskw3")
+
+[node name="HP" type="TextureProgressBar" parent="map"]
+offset_left = 144.0
+offset_top = -100.0
+offset_right = 289.0
+offset_bottom = 45.0
+scale = Vector2(2, 2)
+max_value = 4.0
+value = 4.0
+texture_progress = ExtResource("4_vyoi8")
+
+[node name="hpBar" type="Label" parent="map/HP"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 34.0
+offset_right = 75.0
+offset_bottom = 47.0
+text = "HP:
+"
+label_settings = SubResource("LabelSettings_46qne")
+
 [node name="Player" parent="." instance=ExtResource("2_5ubx8")]
-position = Vector2(352, 552)
+position = Vector2(326, 536)
 scale = Vector2(0.905, 0.905)
 motion_mode = 1
 floor_max_angle = 1.5708
@@ -38,4 +88,13 @@ floor_max_angle = 1.5708
 [node name="Ball" parent="." instance=ExtResource("3_jkmkq")]
 position = Vector2(576, 152)
 
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(575, 327)
+
+[node name="Loading" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+autostart = true
+
 [connection signal="body_entered" from="map/Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="timeout" from="Loading" to="." method="_on_loading_timeout"]
