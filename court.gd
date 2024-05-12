@@ -27,10 +27,6 @@ func _process(delta):
 	stmBar.set_value(stm)
 	hpBar.set_value(hp)
 
-func _on_area_2d_body_entered(body):
-	Game.directionX = - Game.directionX
-	Game.directionY = - Game.directionY
-
 func _start():
 	if not loading:
 		get_tree().change_scene_to_file("res://parts/main.tscn")

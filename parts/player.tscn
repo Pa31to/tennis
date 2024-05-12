@@ -103,11 +103,11 @@ func _hit(tecla):
 					if(Game.ballspeed <= Game.maxBallSpeed ):
 						Game.ballspeed += 50
 				elif(Input.is_action_pressed(\"lob\")):
-					Game.directionY = - 0.75	
+					Game.directionY = - 1	
 					if(Game.ballspeed >= Game.minBallSpeed ):
 						Game.ballspeed -= 25	
 				else:
-					Game.directionY = - Game.directionY
+					Game.directionY = - 1
 		\"D\":
 			
 			print(Game.ballspeed)
@@ -127,7 +127,7 @@ func _hit(tecla):
 					if(Game.ballspeed >= Game.minBallSpeed ):
 						Game.ballspeed -= 25	
 				else:
-					Game.directionY = - Game.directionY
+					Game.directionY = - 1
 		_:
 			print(\"No es un control\")
 
@@ -184,9 +184,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("2_8cd5u")
-}, {
-"duration": 1.0,
-"texture": ExtResource("1_a4rvv")
 }],
 "loop": false,
 "name": &"dash",
@@ -289,9 +286,8 @@ script = SubResource("GDScript_wqgdd")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_1ytss")
-animation = &"dash"
-frame = 6
-frame_progress = 1.0
+animation = &"run"
+frame_progress = 0.379094
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -8)
