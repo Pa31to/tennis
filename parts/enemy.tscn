@@ -1,7 +1,13 @@
-[gd_scene load_steps=18 format=3 uid="uid://dqrby7wr2h4tn"]
+[gd_scene load_steps=27 format=3 uid="uid://dqrby7wr2h4tn"]
 
 [ext_resource type="Texture2D" uid="uid://dn18w3wvrt475" path="res://assets/spritesheets/player.png" id="1_ana15"]
 [ext_resource type="Script" path="res://parts/enemy.gd" id="1_mbjl0"]
+[ext_resource type="Texture2D" uid="uid://djajopkegclkq" path="res://assets/Mis Sprites/Swing/Swing-1.png" id="3_m8gsd"]
+[ext_resource type="Texture2D" uid="uid://cckn1xql0rwb7" path="res://assets/Mis Sprites/Swing/Swing-2.png" id="4_1uujr"]
+[ext_resource type="Texture2D" uid="uid://8m2q37mwpkf8" path="res://assets/Mis Sprites/Swing/Swing-3.png" id="5_1lhe0"]
+[ext_resource type="Texture2D" uid="uid://dtm4kka6srqe4" path="res://assets/Mis Sprites/Swing/Swing-4.png" id="6_n5l2c"]
+[ext_resource type="Texture2D" uid="uid://cin87611xk52h" path="res://assets/Mis Sprites/Swing/Swing-5.png" id="7_tvf6n"]
+[ext_resource type="Texture2D" uid="uid://c0xtjbf36opeb" path="res://assets/Mis Sprites/blank.png" id="8_kniec"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_3dnsg"]
 
@@ -114,6 +120,61 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="SpriteFrames" id="SpriteFrames_icw8j"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_m8gsd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_1uujr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_1lhe0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_n5l2c")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_tvf6n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_kniec")
+}],
+"loop": false,
+"name": &"swing",
+"speed": 20.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_373al"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_m8gsd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_1uujr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_1lhe0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_n5l2c")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_tvf6n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_kniec")
+}],
+"loop": false,
+"name": &"swing",
+"speed": 20.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1xo0t"]
+size = Vector2(156, 94)
+
 [node name="Enemy" type="CharacterBody2D"]
 script = ExtResource("1_mbjl0")
 
@@ -126,4 +187,51 @@ scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_hudbq")
 animation = &"idle"
 frame_progress = 0.145967
-metadata/_edit_lock_ = true
+
+[node name="ballDetection" type="Area2D" parent="."]
+
+[node name="detectD" type="Area2D" parent="ballDetection"]
+
+[node name="CollisionD" type="CollisionPolygon2D" parent="ballDetection/detectD"]
+position = Vector2(0.543751, 0.366821)
+scale = Vector2(1.02705, 1.00481)
+polygon = PackedVector2Array(0, -31, 0, 37, 8, 40, 23, 42, 39, 42, 62, 38, 67, 10, 66, -26, 55, -44, 23, -49, 6, -47, 0, -41)
+
+[node name="AnimateD" type="AnimatedSprite2D" parent="ballDetection/detectD/CollisionD"]
+position = Vector2(33.875, -3)
+scale = Vector2(2.25, 2.75)
+sprite_frames = SubResource("SpriteFrames_icw8j")
+animation = &"swing"
+frame = 5
+frame_progress = 1.0
+
+[node name="detectI" type="Area2D" parent="ballDetection"]
+
+[node name="CollisionI" type="CollisionPolygon2D" parent="ballDetection/detectI"]
+polygon = PackedVector2Array(0, -41, 0, 37, -11, 40, -26, 42, -69, 38, -72, -5, -68, -40, -37, -48)
+
+[node name="AnimateI" type="AnimatedSprite2D" parent="ballDetection/detectI/CollisionI"]
+position = Vector2(-38.5, 2)
+scale = Vector2(2.65625, 3)
+sprite_frames = SubResource("SpriteFrames_373al")
+animation = &"swing"
+frame = 5
+frame_progress = 1.0
+flip_h = true
+
+[node name="CollisionFull" type="CollisionShape2D" parent="ballDetection"]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_1xo0t")
+
+[node name="canhit" type="Timer" parent="."]
+one_shot = true
+
+[node name="toPredict" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="body_entered" from="ballDetection/detectD" to="." method="_on_detect_d_body_entered"]
+[connection signal="body_exited" from="ballDetection/detectD" to="." method="_on_detect_d_body_exited"]
+[connection signal="body_entered" from="ballDetection/detectI" to="." method="_on_detect_i_body_entered"]
+[connection signal="body_exited" from="ballDetection/detectI" to="." method="_on_detect_i_body_exited"]
+[connection signal="timeout" from="canhit" to="." method="_on_canhit_timeout"]
+[connection signal="timeout" from="toPredict" to="." method="_on_to_predict_timeout"]

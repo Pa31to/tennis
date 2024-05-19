@@ -10,3 +10,4 @@ var maxBallSpeed = 500
 var minBallSpeed = 150
 var directionX = -1
 var directionY = 1
+var side = 0

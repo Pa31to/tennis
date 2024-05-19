@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dc28g7cew3dtx"]
+[gd_scene load_steps=10 format=3 uid="uid://dc28g7cew3dtx"]
 
 [ext_resource type="Texture2D" uid="uid://f4acfwxn7qgb" path="res://assets/Backgrounds mios/cancha.png" id="1_0beuf"]
 [ext_resource type="Script" path="res://court.gd" id="1_npf08"]
@@ -15,12 +15,6 @@ font_color = Color(0, 0, 0, 1)
 [sub_resource type="LabelSettings" id="LabelSettings_46qne"]
 font_size = 9
 font_color = Color(0, 0, 0, 1)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_fio6e"]
-size = Vector2(528.5, 20)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_apu3x"]
-size = Vector2(136, 75)
 
 [node name="court" type="Node2D"]
 script = ExtResource("1_npf08")
@@ -75,18 +69,6 @@ text = "HP:
 "
 label_settings = SubResource("LabelSettings_46qne")
 
-[node name="Area2D" type="Area2D" parent="map"]
-
-[node name="Net" type="CollisionShape2D" parent="map/Area2D"]
-position = Vector2(510.75, 322)
-shape = SubResource("RectangleShape2D_fio6e")
-
-[node name="Area2D2" type="Area2D" parent="map"]
-
-[node name="Base" type="CollisionShape2D" parent="map/Area2D2"]
-position = Vector2(509, 95)
-shape = SubResource("RectangleShape2D_apu3x")
-
 [node name="Player" parent="." instance=ExtResource("2_5ubx8")]
 position = Vector2(326, 536)
 scale = Vector2(0.905, 0.905)
@@ -94,7 +76,7 @@ motion_mode = 1
 floor_max_angle = 1.5708
 
 [node name="Ball" parent="." instance=ExtResource("3_jkmkq")]
-position = Vector2(492, 356)
+position = Vector2(576, 152)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(575, 327)
@@ -107,5 +89,4 @@ autostart = true
 [node name="Enemy" parent="." instance=ExtResource("7_4mxy6")]
 position = Vector2(610, 98)
 
-[connection signal="body_entered" from="map/Area2D" to="." method="_on_area_2d_body_entered"]
 [connection signal="timeout" from="Loading" to="." method="_on_loading_timeout"]

@@ -6,7 +6,7 @@ extends Node2D
 var loading = true
 
 func _ready():
-	pass
+	Game.side = -1
 
 func _process(delta):
 	if Input.is_action_pressed("start"):
@@ -34,3 +34,8 @@ func _start():
 
 func _on_loading_timeout():
 	loading = false
+
+
+func _on_area_2d_body_entered(body):
+	if body.name == "Ball" and not Game.side == 0:
+		Game.side = Game.side * -1
