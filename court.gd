@@ -39,3 +39,8 @@ func _on_loading_timeout():
 func _on_area_2d_body_entered(body):
 	if body.name == "Ball" and not Game.side == 0:
 		Game.side = Game.side * -1
+	elif body.name == "Ball":
+		Game.side = -Game.directionY 	
+	if body.name == "Enemy":
+		body.touchNet = true;
+		
